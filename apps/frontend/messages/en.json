@@ -1,0 +1,114 @@
+{
+    "common": {
+        "appName": "RAG AI Knowledge Base",
+        "loading": "Loading...",
+        "error": "Error occurred",
+        "success": "Success",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "search": "Search",
+        "back": "Back",
+        "next": "Next",
+        "previous": "Previous"
+    },
+    "navigation": {
+        "dashboard": "Dashboard",
+        "knowledgeBases": "Knowledge Bases",
+        "chat": "Chat",
+        "upload": "Upload",
+        "settings": "Settings"
+    },
+    "settings": {
+        "title": "Settings",
+        "description": "Manage your account settings and preferences",
+        "profile": {
+            "title": "Profile Settings",
+            "name": "Name",
+            "email": "Email",
+            "avatar": "Avatar",
+            "updateProfile": "Update Profile",
+            "changePassword": "Change Password"
+        },
+        "preferences": {
+            "title": "Preferences",
+            "language": "Language",
+            "theme": "Theme",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System",
+            "notifications": "Notifications",
+            "enableNotifications": "Enable notifications"
+        },
+        "account": {
+            "title": "Account Settings",
+            "currentPassword": "Current Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm Password",
+            "updatePassword": "Update Password",
+            "dangerZone": "Danger Zone",
+            "deleteAccount": "Delete Account",
+            "deleteAccountWarning": "This action cannot be undone. All your data will be permanently deleted."
+        },
+        "api": {
+            "title": "API Settings",
+            "apiKey": "API Key",
+            "generateKey": "Generate New Key",
+            "regenerateKey": "Regenerate Key",
+            "keyGenerated": "API key generated successfully",
+            "copyKey": "Copy Key"
+        }
+    },
+    "auth": {
+        "login": "Login",
+        "register": "Register",
+        "logout": "Logout",
+        "email": "Email",
+        "password": "Password",
+        "name": "Name",
+        "forgotPassword": "Forgot Password?",
+        "noAccount": "Don't have an account?",
+        "hasAccount": "Already have an account?",
+        "signIn": "Sign In",
+        "signUp": "Sign Up"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome back",
+        "stats": {
+            "totalKBs": "Total Knowledge Bases",
+            "totalDocuments": "Total Documents",
+            "totalChats": "Total Chats"
+        }
+    },
+    "knowledgeBases": {
+        "title": "Knowledge Bases",
+        "createNew": "Create New",
+        "empty": "No knowledge bases yet",
+        "createFirst": "Create your first knowledge base to get started",
+        "name": "Name",
+        "description": "Description",
+        "documents": "Documents",
+        "createdAt": "Created At"
+    },
+    "chat": {
+        "title": "Chat",
+        "selectKB": "Select a knowledge base",
+        "sendMessage": "Send message",
+        "typing": "AI is typing...",
+        "empty": "Start a conversation",
+        "placeholder": "Ask a question..."
+    },
+    "upload": {
+        "title": "Upload Documents",
+        "dragDrop": "Drag and drop files here",
+        "orClick": "or click to browse",
+        "supportedFormats": "Supported formats: PDF, DOCX, TXT, MD",
+        "uploading": "Uploading...",
+        "uploaded": "Uploaded successfully",
+        "failed": "Upload failed"
+    }
+}

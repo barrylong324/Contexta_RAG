@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User & Authentication
+// ============================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?   // Hashed with bcrypt
+  name          String?
+  image         String?
+  role          Role      @default(USER)
+  
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Owned resources
+  knowledgeBases KnowledgeBase[] @relation("KnowledgeBaseOwner")
+  uploadedDocuments Document[]
+  
+  // Collaborations
+  collaborations Collaboration[]
+  
+  // Conversations
+  conversations Conversation[]
+  
+  // API Keys
+  apiKeys       ApiKey[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  
+  @@index([email])
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  USER
+  GUEST
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ============================================
+// Knowledge Base
+// ============================================
+
+model KnowledgeBase {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  icon        String?  // URL or emoji
+  isPublic    Boolean  @default(false)
+  ownerId     String
+  
+  owner       User           @relation("KnowledgeBaseOwner", fields: [ownerId], references: [id])
+  documents   Document[]
+  collaborations Collaboration[]
+  conversations Conversation[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  
+  @@index([ownerId])
+  @@map("knowledge_bases")
+}
+
+model Collaboration {
+  id              String   @id @default(uuid())
+  userId          String
+  knowledgeBaseId String
+  role            CollaborationRole @default(VIEWER)
+  
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  knowledgeBase KnowledgeBase @relation(fields: [knowledgeBaseId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([userId, knowledgeBaseId])
+  @@index([knowledgeBaseId])
+  @@map("collaborations")
+}
+
+enum CollaborationRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+// ============================================
+// Documents
+// ============================================
+
+model Document {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  fileName        String
+  fileType        String   // pdf, docx, txt, md, html
+  fileSize        Int      // in bytes
+  storageKey      String   // S3/R2 key
+  mimeType        String
+  
+  knowledgeBaseId String
+  knowledgeBase   KnowledgeBase @relation(fields: [knowledgeBaseId], references: [id], onDelete: Cascade)
+  
+  uploadedById    String
+  uploadedBy      User     @relation(fields: [uploadedById], references: [id])
+  
+  status          DocumentStatus @default(PENDING)
+  chunks          DocumentChunk[]
+  
+  tags            String[] // Array of tags
+  metadata        Json?    // Additional metadata
+  
+  processingStartedAt DateTime?
+  processingCompletedAt DateTime?
+  processingError   String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+  
+  @@index([knowledgeBaseId])
+  @@index([uploadedById])
+  @@index([status])
+  @@map("documents")
+}
+
+enum DocumentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model DocumentChunk {
+  id         String   @id @default(uuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  content    String   @db.Text
+  embedding  Unsupported("vector(1536)")? // pgvector, 1536 dimensions for Ada-002
+  
+  chunkIndex Int
+  tokenCount Int
+  
+  metadata   Json?    // Page number, section title, etc.
+  
+  createdAt  DateTime @default(now())
+  
+  @@index([documentId])
+  @@map("document_chunks")
+}
+
+// ============================================
+// Conversations & Messages
+// ============================================
+
+model Conversation {
+  id              String   @id @default(uuid())
+  title           String?
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  knowledgeBaseId String?
+  knowledgeBase   KnowledgeBase? @relation(fields: [knowledgeBaseId], references: [id])
+  
+  messages        Message[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+  
+  @@index([userId])
+  @@index([knowledgeBaseId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  role           MessageRole
+  content        String   @db.Text
+  
+  // For AI messages: retrieved context
+  sources        Json?    // Array of {chunkId, documentId, score, content}
+  
+  // Feedback
+  rating         MessageRating?
+  feedback       String?
+  
+  createdAt      DateTime @default(now())
+  
+  @@index([conversationId])
+  @@map("messages")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum MessageRating {
+  UPVOTE
+  DOWNVOTE
+}
+
+// ============================================
+// API Keys (for external integrations)
+// ============================================
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  name        String
+  key         String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  permissions Json?    // Allowed operations
+  lastUsedAt  DateTime?
+  
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([key])
+  @@map("api_keys")
+}
+
+// ============================================
+// Audit Log
+// ============================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String   // LOGIN, UPLOAD_DOCUMENT, DELETE_KB, etc.
+  resource  String?  // Resource type
+  resourceId String? // Resource ID
+  ipAddress String?
+  userAgent String?
+  metadata  Json?    // Additional context
+  
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
