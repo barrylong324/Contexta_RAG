@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import apiClient from '@/lib/api-client';
+import service from '@/lib/request';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { log } from 'console';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -22,9 +23,8 @@ export default function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-
         try {
-            await apiClient.post('/auth/register', formData);
+            await service.post('/auth/register', formData);
             toast.success('Registration successful! Please login.');
             router.push('/login');
         } catch (error: any) {

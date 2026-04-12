@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
-import apiClient from '@/lib/api-client';
+import service from '@/lib/request';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,8 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            const response = await apiClient.post('/auth/login', formData);
+            console.log(formData);
+            const response = await service.post('/auth/login', formData);
             const { user, access_token } = response.data;
 
             login(user, access_token);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import apiClient from '@/lib/api-client';
+import service from '@/lib/request';
 import { BookOpen, FileText, MessageSquare, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,9 +28,9 @@ export default function DashboardPage() {
     const loadStats = async () => {
         try {
             const [kbRes, docRes, convRes] = await Promise.all([
-                apiClient.get('/knowledge-bases'),
-                apiClient.get('/documents'),
-                apiClient.get('/conversations'),
+                service.get('/knowledge-bases'),
+                service.get('/documents'),
+                service.get('/conversations'),
             ]);
 
             setStats({

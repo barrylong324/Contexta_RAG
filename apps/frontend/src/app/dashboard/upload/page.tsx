@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import apiClient from '@/lib/api-client';
+import service from '@/lib/request';
 import { Upload as UploadIcon, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,7 @@ export default function UploadPage() {
 
     const loadKnowledgeBases = async () => {
         try {
-            const response = await apiClient.get('/knowledge-bases');
+            const response = await service.get('/knowledge-bases');
             setKnowledgeBases(response.data);
             if (response.data.length > 0) {
                 setSelectedKB(response.data[0].id);
@@ -47,7 +47,7 @@ export default function UploadPage() {
 
     const loadDocuments = async () => {
         try {
-            const response = await apiClient.get('/documents');
+            const response = await service.get('/documents');
             setDocuments(response.data.slice(0, 20)); // Show last 20 documents
         } catch (error) {
             console.error('Failed to load documents:', error);
@@ -67,7 +67,7 @@ export default function UploadPage() {
         formData.append('knowledgeBaseId', selectedKB);
 
         try {
-            await apiClient.post('/uploads', formData, {
+            await service.post('/uploads', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -157,8 +157,8 @@ export default function UploadPage() {
                                     onDragOver={handleDrag}
                                     onDrop={handleDrop}
                                     className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive
-                                            ? 'border-black bg-gray-50'
-                                            : 'border-gray-300'
+                                        ? 'border-black bg-gray-50'
+                                        : 'border-gray-300'
                                         }`}
                                 >
                                     <input

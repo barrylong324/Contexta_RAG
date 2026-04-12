@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import apiClient from '@/lib/api-client';
+import service from '@/lib/request';
 import { Send, Bot, User as UserIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -43,7 +43,7 @@ export default function ChatPage() {
 
     const loadKnowledgeBases = async () => {
         try {
-            const response = await apiClient.get('/knowledge-bases');
+            const response = await service.get('/knowledge-bases');
             setKnowledgeBases(response.data);
             if (response.data.length > 0) {
                 setSelectedKB(response.data[0].id);
@@ -71,7 +71,7 @@ export default function ChatPage() {
         setIsLoading(true);
 
         try {
-            const response = await apiClient.post(`/knowledge-bases/${selectedKB}/chat/message`, {
+            const response = await service.post(`/knowledge-bases/${selectedKB}/chat/message`, {
                 content: userMessage,
             });
 
