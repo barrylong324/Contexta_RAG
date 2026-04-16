@@ -8,16 +8,17 @@
         "lint": "eslint src/"
     },
     "dependencies": {
-        "@langchain/core": "^0.1.20",
-        "@langchain/openai": "^0.0.14",
-        "@rag-ai/shared-types": "workspace:*",
+        "@langchain/deepseek": "^1.0.24",
         "@rag-ai/config": "workspace:*",
-        "langchain": "^0.1.9",
+        "@rag-ai/shared-types": "workspace:*",
+        "langchain": "^0.1.37",
         "zod": "^3.22.4"
     },
     "devDependencies": {
-        "@rag-ai/database": "workspace:*",
+        "@langchain/core": "^1.1.40",
+        "@langchain/openai": "^1.4.4",
         "@rag-ai/config": "workspace:*",
+        "@rag-ai/database": "workspace:*",
         "eslint": "^8.56.0",
         "typescript": "^5.3.3"
     }

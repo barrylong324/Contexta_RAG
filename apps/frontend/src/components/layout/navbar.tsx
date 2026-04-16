@@ -21,7 +21,7 @@ export default function Navbar() {
         <header className="bg-white border-b border-gray-200">
             <div className="flex items-center justify-between px-6 py-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-black">Dashboard</h2>
+                    <h2 className="text-2xl font-bold text-black">袁总的专属Rag知识库即将上线！</h2>
                 </div>
 
                 <div className="flex items-center space-x-4">

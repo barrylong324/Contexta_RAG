@@ -71,8 +71,9 @@ export default function ChatPage() {
         setIsLoading(true);
 
         try {
-            const response = await service.post(`/knowledge-bases/${selectedKB}/chat/message`, {
+            const response = await service.post(`/knowledge-bases/chat/message`, {
                 content: userMessage,
+                kbId: selectedKB
             });
 
             const assistantMessage = response.data.answer || response.data.content;
@@ -103,20 +104,20 @@ export default function ChatPage() {
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)]">
             <div className="mb-4">
-                <h1 className="text-3xl font-bold text-black">AI Chat</h1>
-                <p className="mt-1 text-sm text-gray-600">Chat with your knowledge base using AI</p>
+                <h1 className="text-3xl font-bold text-black">AI Rag Chat</h1>
+                <p className="mt-1 text-sm text-gray-600">使用AI与您的知识库聊天</p>
             </div>
 
             <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Knowledge Base
+                    选择知识库
                 </label>
                 <select
                     value={selectedKB}
                     onChange={(e) => setSelectedKB(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 >
-                    <option value="">Choose a knowledge base...</option>
+                    <option value="">选择一个知识库...</option>
                     {knowledgeBases.map((kb) => (
                         <option key={kb.id} value={kb.id}>
                             {kb.name}
@@ -131,7 +132,7 @@ export default function ChatPage() {
                         <div className="flex items-center justify-center h-full text-gray-400">
                             <div className="text-center">
                                 <Bot className="mx-auto h-12 w-12 mb-4" />
-                                <p>Start a conversation by typing a message below</p>
+                                <p>通过在下面输入消息开始对话</p>
                             </div>
                         </div>
                     ) : (
@@ -197,7 +198,7 @@ export default function ChatPage() {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your message..."
+                            placeholder="袁总你尽管问..."
                             disabled={!selectedKB || isLoading}
                             className="flex-1"
                         />

@@ -115,7 +115,7 @@ export default function KnowledgeBasesPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-black">Knowledge Bases</h1>
                     <p className="mt-1 text-sm text-gray-600">
-                        Manage your knowledge bases and organize documents
+                        管理您的知识库并整理文档
                     </p>
                 </div>
                 <Button

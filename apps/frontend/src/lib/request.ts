@@ -19,7 +19,7 @@ export const service = axios.create({
         'Content-Type': 'application/json',
     },
     withCredentials: true, // send cookies when cross-domain requests
-    timeout: 15000, // request timeout
+    timeout: 60000, // request timeout
     paramsSerializer: function (params) {
         return qs.stringify(params);
     },
