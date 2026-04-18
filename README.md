@@ -2,13 +2,9 @@
 
 > 生产级RAG AI知识库应用 - 基于 Next.js + Nest.js + TypeScript Monorepo架构
 
-![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0--beta-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-
 ## 🎯 项目简介
 
-企业级RAG (Retrieval-Augmented Generation) AI知识库应用，支持多格式文档上传、自动向量化存储和智能问答。
+企业级RAG (Retrieval-Augmented Generation) AI知识库应用，支持多格式文档上传、自动向量化存储和智能问答，已接入DeepSeek api，支持LLM对话。
 
 **核心特性**:
 
@@ -91,7 +87,7 @@ RagAIProject/
 
 ---
 
-## 🏃 快速开始
+## 🏃 初始化
 
 ### 前置要求
 
@@ -100,110 +96,7 @@ RagAIProject/
 - Docker Desktop（用于数据库服务）
 - OpenAI API Key
 
-### 方式一：开发模式启动（推荐）
-
-使用便捷脚本一键启动数据库服务,然后在本地运行前后端:
-
-**Windows:**
-
-```bash
-start-dev.bat
-```
-
-**Mac/Linux:**
-
-```bash
-chmod +x start-dev.sh
-./start-dev.sh
-```
-
-这个脚本会:
-
-1. 启动PostgreSQL和Redis容器
-2. 安装所有依赖
-3. 生成Prisma Client
-4. 运行数据库迁移
-
-然后你可以选择以下任一方式启动应用:
-
-**选项A - 使用Turbo同时启动前后端:**
-
-```bash
-pnpm run dev
-```
-
-**选项B - 分别启动(适合调试):**
-
-终端1 - 启动后端:
-
-```bash
-cd apps/backend
-pnpm run start:dev
-```
-
-终端2 - 启动前端:
-
-```bash
-cd apps/frontend
-pnpm run dev
-```
-
-访问应用:
-
-- 🌐 前端: http://localhost:3000
-- 🔧 后端API: http://localhost:4000
-- 📚 Swagger文档: http://localhost:4000/api/docs
-
-停止数据库服务:
-
-```bash
-docker-compose down
-```
-
-### 方式二：Docker全容器化部署
-
-如果你想将所有服务(包括前后端)都运行在Docker容器中:
-
-**Windows:**
-
-```bash
-start.bat
-```
-
-**Mac/Linux:**
-
-```bash
-chmod +x start.sh
-./start.sh
-```
-
-或直接使用:
-
-```bash
-docker compose up --build -d
-```
-
-注意: 首次构建可能需要5-10分钟,因为需要下载和编译所有依赖。
-
-查看日志:
-
-```bash
-docker compose logs -f
-```
-
-停止服务:
-
-```bash
-docker compose down
-```
-
-完全清理(包括数据):
-
-```bash
-docker compose down -v
-```
-
-### 手动配置
+### 项目配置
 
 #### 1. 克隆项目并安装依赖
 
@@ -249,19 +142,90 @@ pnpm db:migrate
 cd ../..
 ```
 
-#### 5. 启动开发服务器
+## 🏃 快速开始
+
+### 方式一：开发模式启动（推荐）
+
+Docker Desktop桌面端 - 启动PostgreSQL/pgvector/redis
+
+终端1 - 启动后端:
 
 ```bash
-pnpm dev
+cd apps/backend
+pnpm run start:dev
 ```
 
-访问：
+终端2 - 启动前端:
 
-- 前端: http://localhost:3000
-- 后端API: http://localhost:4000
-- Swagger文档: http://localhost:4000/api/docs
+```bash
+cd apps/frontend
+pnpm run dev
+```
 
----
+启动数据库GUI:
+
+```bash
+cd packages/database
+npx prisma studio --port 5555
+```
+
+访问应用:
+
+- 🌐 前端: http://localhost:3000
+- 🔧 后端API: http://localhost:4000
+- 📚 Swagger文档: http://localhost:4000/api/docs
+- 📚 数据库GUI: http://localhost:5555
+
+停止数据库服务:
+
+```bash
+docker-compose down
+```
+
+### 方式二：Docker全容器化部署
+
+如果你想将所有服务(包括前后端)都运行在Docker容器中需要在根目录创建对应的:
+
+**Windows:**
+
+```bash
+start.bat
+```
+
+**Mac/Linux:**
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+文件并执行
+
+或直接使用:
+
+```bash
+docker compose up --build -d
+```
+
+注意: 首次构建可能需要5-10分钟,因为需要下载和编译所有依赖。
+
+查看日志:
+
+```bash
+docker compose logs -f
+```
+
+停止服务:
+
+```bash
+docker compose down
+```
+
+完全清理(包括数据):
+
+```bash
+docker compose down -v
+```
 
 ## 📖 使用指南
 
@@ -279,7 +243,11 @@ pnpm dev
 
 ### 4. 智能问答
 
-点击"Chat"，选择知识库，提问关于文档内容的问题
+点击"RAG对话"，选择知识库，提问关于文档内容的问题
+
+### 4. AIGC对话问答
+
+点击"AIGC对话"，提问任何问题
 
 ---
 
@@ -313,9 +281,6 @@ docker-compose logs -f    # 查看日志
 ## 📚 文档
 
 - [架构设计](ARCHITECTURE.md) - 系统架构和技术决策
-- [技术深度解析](TECHNICAL_DEEP%20Dive.md) - 核心技术实现详解
-- [部署指南](DEPLOYMENT.md) - 生产环境部署方案
-- [面试准备](INTERVIEW_PREP.md) - 项目面试准备清单
 
 ---
 
@@ -347,8 +312,6 @@ pnpm format      # 格式化代码
 ---
 
 ## 🚢 部署
-
-详见 [部署指南](DEPLOYMENT.md)
 
 **推荐方案**:
 
