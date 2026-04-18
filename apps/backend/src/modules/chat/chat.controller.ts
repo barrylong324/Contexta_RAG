@@ -4,12 +4,13 @@ import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 interface SendMessageDto {
+    kbId: string;
     content: string;
     conversationId?: string;
 }
 
 @ApiTags('chat')
-@Controller('knowledge-bases/:kbId/chat')
+@Controller('knowledge-bases/chat')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ChatController {
@@ -17,10 +18,10 @@ export class ChatController {
 
     @Post('message')
     @ApiOperation({ summary: 'Send a message and get AI response' })
-    async sendMessage(@Param('kbId') kbId: string, @Body() body: SendMessageDto, @Req() req: any) {
+    async sendMessage(@Body() body: SendMessageDto, @Req() req: any) {
         return this.chatService.sendMessage(
             req.user.userId,
-            kbId,
+            body.kbId,
             body.content,
             body.conversationId,
         );

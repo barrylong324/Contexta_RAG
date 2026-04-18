@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import apiClient from '@/lib/api-client';
+import service from '@/lib/request';
 import { Plus, Trash2, Edit, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -49,7 +49,7 @@ export default function KnowledgeBasesPage() {
 
     const loadKnowledgeBases = async () => {
         try {
-            const response = await apiClient.get('/knowledge-bases');
+            const response = await service.get('/knowledge-bases');
             setKnowledgeBases(response.data);
         } catch (error) {
             toast.error('Failed to load knowledge bases');
@@ -68,7 +68,7 @@ export default function KnowledgeBasesPage() {
             if (actionType === 'edit') {
                 params.id = newKB.id
             }
-            await apiClient.post('/knowledge-bases', params)
+            await service.post('/knowledge-bases', params)
             toast.success('Knowledge base updated!');
             setShowCreateModal(false);
             setNewKB({ id: '', name: '', description: '' });
@@ -93,7 +93,7 @@ export default function KnowledgeBasesPage() {
         if (!confirm('Are you sure you want to delete this knowledge base?')) return;
 
         try {
-            await apiClient.delete(`/knowledge-bases/${id}`);
+            await service.delete(`/knowledge-bases/${id}`);
             toast.success('Knowledge base deleted');
             loadKnowledgeBases();
         } catch (error) {
@@ -115,7 +115,7 @@ export default function KnowledgeBasesPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-black">Knowledge Bases</h1>
                     <p className="mt-1 text-sm text-gray-600">
-                        Manage your knowledge bases and organize documents
+                        管理您的知识库并整理文档
                     </p>
                 </div>
                 <Button

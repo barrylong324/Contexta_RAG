@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import apiClient from '@/lib/api-client';
+import { useAuthStore } from '@/stores/auth-store';
+import service from '@/lib/request';
 import { BookOpen, FileText, MessageSquare, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +14,7 @@ interface Stats {
 }
 
 export default function DashboardPage() {
+    const { user } = useAuthStore();
     const [stats, setStats] = useState<Stats>({
         knowledgeBases: 0,
         documents: 0,
@@ -28,9 +30,9 @@ export default function DashboardPage() {
     const loadStats = async () => {
         try {
             const [kbRes, docRes, convRes] = await Promise.all([
-                apiClient.get('/knowledge-bases'),
-                apiClient.get('/documents'),
-                apiClient.get('/conversations'),
+                service.get('/knowledge-bases'),
+                service.get('/documents'),
+                service.get('/conversations'),
             ]);
 
             setStats({
@@ -78,8 +80,8 @@ export default function DashboardPage() {
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold text-black">{t('title')}</h1>
-                <p className="mt-1 text-sm text-gray-600">{t('welcome')}</p>
-                <p className="mt-2 text-gray-600">Manage your knowledge bases and chat with AI</p>
+                <p className="mt-1 text-sm text-gray-600">{t('welcome')}{user?.name}</p>
+                <p className="mt-2 text-gray-600">管理您的知识库并与 AI 聊天</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -111,14 +113,13 @@ export default function DashboardPage() {
 
             <Card>
                 <CardContent className="p-6">
-                    <h3 className="text-lg font-medium text-black mb-4">Quick Start</h3>
+                    <h3 className="text-lg font-medium text-black mb-4">快速开始</h3>
                     <div className="space-y-3">
                         <div className="flex items-start">
                             <TrendingUp className="h-5 w-5 text-black mt-0.5 mr-3" />
                             <div>
                                 <p className="text-sm text-gray-700">
-                                    <strong>Create a Knowledge Base:</strong> Start by creating your
-                                    first knowledge base to organize your documents.
+                                    <strong>创建知识库：</strong> 首先创建你的第一个知识库来组织你的文档
                                 </p>
                             </div>
                         </div>
@@ -126,8 +127,7 @@ export default function DashboardPage() {
                             <TrendingUp className="h-5 w-5 text-black mt-0.5 mr-3" />
                             <div>
                                 <p className="text-sm text-gray-700">
-                                    <strong>Upload Documents:</strong> Upload PDF, DOCX, or text files
-                                    to build your knowledge base.
+                                    <strong>上传文档：</strong> 上传PDF、DOCX、XLSX文件到你的知识库
                                 </p>
                             </div>
                         </div>
@@ -135,8 +135,7 @@ export default function DashboardPage() {
                             <TrendingUp className="h-5 w-5 text-black mt-0.5 mr-3" />
                             <div>
                                 <p className="text-sm text-gray-700">
-                                    <strong>Start Chatting:</strong> Ask questions and get AI-powered
-                                    answers based on your documents.
+                                    <strong>开始聊天：</strong>提出问题并根据您的文档获取 AI 支持的答案
                                 </p>
                             </div>
                         </div>

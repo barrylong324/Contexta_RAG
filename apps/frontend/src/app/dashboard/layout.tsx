@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import Sidebar from '@/components/layout/sidebar';
@@ -8,13 +8,30 @@ import Navbar from '@/components/layout/navbar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const { isAuthenticated, initialize } = useAuthStore();
+    const [isChecking, setIsChecking] = useState(true);
+
+    // 在组件挂载时立即初始化认证状态
+    useEffect(() => {
+        initialize();
+        setIsChecking(false);
+    }, [initialize]);
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        // 只有在检查完成后才进行重定向
+        if (!isChecking && !isAuthenticated) {
             router.push('/login');
         }
-    }, [isAuthenticated, router]);
+    }, [isChecking, isAuthenticated, router]);
+
+    // 等待初始化完成
+    if (isChecking) {
+        return (
+            <div className="flex h-screen bg-white items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+            </div>
+        );
+    }
 
     if (!isAuthenticated) {
         return null;
