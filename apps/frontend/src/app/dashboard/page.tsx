@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import service from '@/lib/request';
 import { BookOpen, FileText, MessageSquare, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
+import { getAllKnowledgeBases, getAllDocument, getAigcNormalChatAllMessage } from '@/lib/requestModule/request-bus'
 
 interface Stats {
     knowledgeBases: number;
@@ -30,16 +30,19 @@ export default function DashboardPage() {
     const loadStats = async () => {
         try {
             const [kbRes, docRes, convRes] = await Promise.all([
-                service.get('/knowledge-bases'),
-                service.get('/documents'),
-                service.get('/conversations'),
+                getAllKnowledgeBases(),
+                getAllDocument(''),
+                getAigcNormalChatAllMessage(),
             ]);
+            console.log(kbRes);
+            console.log(docRes);
+            console.log(convRes);
 
             setStats({
-                knowledgeBases: kbRes.data.length || 0,
-                documents: docRes.data.length || 0,
-                conversations: convRes.data.length || 0,
-            });
+                knowledgeBases: kbRes?.data?.result?.length || 0,
+                documents: docRes?.data?.result?.length || 0,
+                conversations: convRes?.data?.result?.length || 0
+            })
         } catch (error) {
             console.error('Failed to load stats:', error);
         } finally {

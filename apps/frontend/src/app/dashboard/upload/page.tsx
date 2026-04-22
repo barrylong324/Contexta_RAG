@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import service from '@/lib/request';
+import { useEffect, useState, useCallback } from 'react';
 import { Upload as UploadIcon, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getAllKnowledgeBases, getAllDocument, uploadFile } from '@/lib/requestModule/request-bus'
 
 interface KnowledgeBase {
     id: string;
@@ -28,31 +28,46 @@ export default function UploadPage() {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [dragActive, setDragActive] = useState(false);
 
-    useEffect(() => {
-        loadKnowledgeBases();
-        loadDocuments();
-    }, []);
-
-    const loadKnowledgeBases = async () => {
+    // 1. 定义 loadDocuments（接收 kbId 参数）
+    const loadDocuments = useCallback(async (kbId: string) => {
+        if (!kbId) return
         try {
-            const response = await service.get('/knowledge-bases');
-            setKnowledgeBases(response.data);
-            if (response.data.length > 0) {
-                setSelectedKB(response.data[0].id);
+            const response = await getAllDocument(kbId)
+            const { code, message, result } = response.data
+            if (code === 200) {
+                setDocuments(result)
+            } else {
+                console.error(message)
+            }
+        } catch (error) {
+            console.error('Failed to load documents:', error)
+        }
+    }, []) // 依赖为空，因为内部只使用了 setDocuments（稳定）和外部 API
+
+    // 2. 定义 loadKnowledgeBases
+    const loadKnowledgeBases = useCallback(async () => {
+        try {
+            const response = await getAllKnowledgeBases()
+            const { code, message, result } = response.data
+            if (code === 200) {
+                const kbList = result
+                setKnowledgeBases(kbList)
+                if (kbList.length > 0) {
+                    const firstKbId = kbList[0].id
+                    setSelectedKB(firstKbId);       // 更新状态（用于其他地方）
+                    await loadDocuments(firstKbId)  // 直接调用，不依赖 selectedKB 状态
+                }
+            } else {
+                toast.error(message || 'Failed to load knowledge bases');
             }
         } catch (error) {
             toast.error('Failed to load knowledge bases');
         }
-    };
+    }, [loadDocuments]) // 依赖 loadDocuments（它被 useCallback 包裹且依赖为空，所以稳定）
 
-    const loadDocuments = async () => {
-        try {
-            const response = await service.get('/documents');
-            setDocuments(response.data.slice(0, 20)); // Show last 20 documents
-        } catch (error) {
-            console.error('Failed to load documents:', error);
-        }
-    };
+    useEffect(() => {
+        loadKnowledgeBases()
+    }, [loadKnowledgeBases])
 
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,14 +82,15 @@ export default function UploadPage() {
         formData.append('knowledgeBaseId', selectedKB);
 
         try {
-            await service.post('/uploads', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            toast.success('File uploaded successfully! Processing...');
-            setFile(null);
-            loadDocuments();
+            const response = await uploadFile(formData)
+            const { code, message, result } = response.data;
+            if (code === 200) {
+                toast.success(message)
+                setFile(null)
+                await loadDocuments(selectedKB)
+            } else {
+                toast.error(message || 'Failed to load knowledge bases');
+            }
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Upload failed');
         } finally {

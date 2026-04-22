@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { log } from 'console';
+import { contextRagRegister } from '@/lib/requestModule/request-bus'
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -24,11 +24,14 @@ export default function RegisterPage() {
         e.preventDefault();
         setIsLoading(true);
         try {
-            await service.post('/auth/register', formData);
-            toast.success('Registration successful! Please login.');
-            router.push('/login');
+            const response = await contextRagRegister(formData.email, formData.password, formData.name)
+            const { code, message, result } = response.data
+            if (code === 200) {
+                toast.success(message)
+                router.push('/login')
+            }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Registration failed');
+            toast.error(error.response?.data?.message || '注册失败！');
         } finally {
             setIsLoading(false);
         }
