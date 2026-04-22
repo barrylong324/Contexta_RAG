@@ -245,7 +245,7 @@ docker compose down -v
 
 点击"RAG对话"，选择知识库，提问关于文档内容的问题
 
-### 4. AIGC对话问答
+### 5. AIGC对话问答
 
 点击"AIGC对话"，提问任何问题
 

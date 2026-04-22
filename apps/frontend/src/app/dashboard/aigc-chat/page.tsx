@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { Send, Bot, User as UserIcon } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { getRagChatMessage, getAllKnowledgeBases } from '@/lib/requestModule/request-bus'
-import { SendMessageDto } from '@rag-ai/shared-types'
+import { useEffect, useState, useRef } from 'react'
+import { Send, Bot, User as UserIcon } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card } from '@/components/ui/card'
+import {
+    getAigcNormalChatMessage
+} from '@/lib/requestModule/request-bus'
 
 interface Message {
     id: string;
@@ -22,16 +23,14 @@ interface KnowledgeBase {
     name: string;
 }
 
-export default function ChatPage() {
+export default function AIGCChatPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([]);
-    const [selectedKB, setSelectedKB] = useState<string>('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        loadKnowledgeBases();
+        // 发起请求
     }, []);
 
     useEffect(() => {
@@ -39,28 +38,12 @@ export default function ChatPage() {
     }, [messages]);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    };
-
-    const loadKnowledgeBases = async () => {
-        try {
-            const response = await getAllKnowledgeBases()
-            const { code, message, result } = response.data
-            if (code === 200) {
-                setKnowledgeBases(result)
-                if (result.length > 0) {
-                    setSelectedKB(result[0].id)
-                }
-            }
-
-        } catch (error) {
-            console.error('Failed to load knowledge bases:', error)
-        }
-    };
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!input.trim() || !selectedKB || isLoading) return;
+        if (!input.trim() || isLoading) return;
 
         const userMessage = input.trim();
         setInput('');
@@ -76,11 +59,7 @@ export default function ChatPage() {
         setIsLoading(true);
 
         try {
-            const params: SendMessageDto = {
-                content: userMessage,
-                kbId: selectedKB
-            } as SendMessageDto
-            const response = await getRagChatMessage(params)
+            const response = await getAigcNormalChatMessage(userMessage)
             const { code, message, result } = response.data
             if (code === 200) {
                 const assistantMessage = result.answer || result.content
@@ -94,6 +73,7 @@ export default function ChatPage() {
                     },
                 ])
             }
+
         } catch (error: any) {
             setMessages((prev) => [
                 ...prev,
@@ -112,26 +92,7 @@ export default function ChatPage() {
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)]">
             <div className="mb-4">
-                <h1 className="text-3xl font-bold text-black">AI Rag Chat</h1>
-                <p className="mt-1 text-sm text-gray-600">使用AI与您的知识库聊天</p>
-            </div>
-
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    选择知识库
-                </label>
-                <select
-                    value={selectedKB}
-                    onChange={(e) => setSelectedKB(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
-                >
-                    <option value="">选择一个知识库...</option>
-                    {knowledgeBases.map((kb) => (
-                        <option key={kb.id} value={kb.id}>
-                            {kb.name}
-                        </option>
-                    ))}
-                </select>
+                <h1 className="text-3xl font-bold text-center">Contexta  AI  Chat</h1>
             </div>
 
             <Card className="flex-1 overflow-hidden flex flex-col border-gray-200">
@@ -206,13 +167,12 @@ export default function ChatPage() {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="RAG知识库，尽管问..."
-                            disabled={!selectedKB || isLoading}
+                            placeholder="随便问..."
                             className="flex-1"
                         />
                         <Button
                             type="submit"
-                            disabled={!input.trim() || !selectedKB || isLoading}
+                            disabled={!input.trim() || isLoading}
                             className="bg-black text-white hover:bg-gray-800"
                         >
                             <Send className="h-5 w-5" />

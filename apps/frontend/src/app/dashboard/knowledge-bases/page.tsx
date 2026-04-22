@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import service from '@/lib/request';
 import { Plus, Trash2, Edit, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -18,6 +17,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { getAllKnowledgeBases, addKnowledgeBases, editKnowledgeBases, delKnowledgeBases } from '@/lib/requestModule/request-bus'
+import { CreateKnowledgeBaseInput, UpdateKnowledgeBaseInput } from '@rag-ai/shared-types'
 
 interface KnowledgeBase {
     id: string;
@@ -28,12 +29,6 @@ interface KnowledgeBase {
     _count?: {
         documents: number;
     };
-}
-
-interface Params {
-    id?: string;
-    name: string;
-    description: string;
 }
 
 export default function KnowledgeBasesPage() {
@@ -49,8 +44,11 @@ export default function KnowledgeBasesPage() {
 
     const loadKnowledgeBases = async () => {
         try {
-            const response = await service.get('/knowledge-bases');
-            setKnowledgeBases(response.data);
+            const response = await getAllKnowledgeBases()
+            const { code, message, result } = response.data
+            if (code === 200) {
+                setKnowledgeBases(result)
+            }
         } catch (error) {
             toast.error('Failed to load knowledge bases');
         } finally {
@@ -61,18 +59,21 @@ export default function KnowledgeBasesPage() {
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const params: Params = {
+            const params: CreateKnowledgeBaseInput | UpdateKnowledgeBaseInput = {
                 name: newKB.name,
                 description: newKB.description
-            } as Params
+            } as CreateKnowledgeBaseInput | UpdateKnowledgeBaseInput
             if (actionType === 'edit') {
                 params.id = newKB.id
             }
-            await service.post('/knowledge-bases', params)
-            toast.success('Knowledge base updated!');
-            setShowCreateModal(false);
-            setNewKB({ id: '', name: '', description: '' });
-            loadKnowledgeBases();
+            const response = actionType === 'add' ? await addKnowledgeBases(params as CreateKnowledgeBaseInput) : await editKnowledgeBases(params as UpdateKnowledgeBaseInput)
+            const { code, message, result } = response.data
+            if (code === 200) {
+                toast.success(message);
+                setShowCreateModal(false)
+                setNewKB({ id: '', name: '', description: '' });
+                loadKnowledgeBases()
+            }
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to create');
         }
@@ -93,9 +94,12 @@ export default function KnowledgeBasesPage() {
         if (!confirm('Are you sure you want to delete this knowledge base?')) return;
 
         try {
-            await service.delete(`/knowledge-bases/${id}`);
-            toast.success('Knowledge base deleted');
-            loadKnowledgeBases();
+            const response = await delKnowledgeBases(id)
+            const { code, message, result } = response.data
+            if (code === 200) {
+                toast.success(message)
+                loadKnowledgeBases()
+            }
         } catch (error) {
             toast.error('Failed to delete');
         }

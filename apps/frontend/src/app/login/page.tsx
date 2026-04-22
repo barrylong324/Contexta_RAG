@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
-import service from '@/lib/request';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { contextRagLogin } from '@/lib/requestModule/request-bus'
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -25,15 +26,17 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            console.log(formData);
-            const response = await service.post('/auth/login', formData);
-            const { user, access_token } = response.data;
+            const response = await contextRagLogin(formData.email, formData.password)
+            const { code, message, result } = response.data
+            if (code === 200) {
+                const { user, access_token } = result
 
-            login(user, access_token);
-            toast.success('Login successful!');
-            router.push('/dashboard');
+                login(user, access_token);
+                toast.success('message');
+                router.push('/dashboard');
+            }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Login failed');
+            toast.error(error.response?.data?.message || '登录失败！');
         } finally {
             setIsLoading(false);
         }
