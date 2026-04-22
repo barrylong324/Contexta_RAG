@@ -18,7 +18,8 @@
     "navigation": {
         "dashboard": "仪表板",
         "knowledgeBases": "知识库",
-        "chat": "对话",
+        "chat": "RAG对话",
+        "aigcChat": "AIGC对话",
         "upload": "上传",
         "settings": "设置"
     },

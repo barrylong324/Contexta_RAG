@@ -18,7 +18,8 @@
     "navigation": {
         "dashboard": "Dashboard",
         "knowledgeBases": "Knowledge Bases",
-        "chat": "Chat",
+        "chat": "RAG Chat",
+        "aigcChat": "AIGC Chat",
         "upload": "Upload",
         "settings": "Settings"
     },
