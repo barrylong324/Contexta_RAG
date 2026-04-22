@@ -32,7 +32,7 @@ export default function LoginPage() {
                 const { user, access_token } = result
 
                 login(user, access_token);
-                toast.success('message');
+                toast.success(message);
                 router.push('/dashboard');
             }
         } catch (error: any) {
