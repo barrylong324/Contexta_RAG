@@ -46,7 +46,6 @@ export class ChatService {
                 conversationId: conversation.id,
             },
         });
-        console.log('到这里吗');
 
         // Get conversation history
         const messages = await this.prisma.message.findMany({
@@ -59,7 +58,7 @@ export class ChatService {
             role: msg.role.toLowerCase(),
             content: msg.content,
         }));
-        console.log('这一步', conversationHistory);
+
         // Execute RAG chain
         // const result = await executeRAGChain({
         //     query: content,
@@ -70,7 +69,6 @@ export class ChatService {
         // 暂时不调用rag了，用通用大模型测试
 
         const answer = await askDeepSeek(content);
-        console.log(1111111, answer);
         return {
             messageId: '',
             answer,
@@ -83,7 +81,6 @@ export class ChatService {
         //     topK: 5,
         //     conversationHistory,
         // });
-        // console.log('结果呢', result);
         // // Save AI response
         // const aiMessage = await this.prisma.message.create({
         //     data: {

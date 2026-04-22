@@ -7,14 +7,16 @@ import {
     Param,
     UseGuards,
     Req,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import { UploadsService } from './uploads.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+    HttpStatus,
+} from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger'
+import { UploadsService } from './uploads.service'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { ResponseDto } from '@rag-ai/shared-types'
 
 @ApiTags('uploads')
-@Controller('knowledge-bases/:kbId/upload')
+@Controller('upload')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UploadsController {
@@ -29,19 +31,24 @@ export class UploadsController {
         @UploadedFile() file: Express.Multer.File,
         @Body() body: { title?: string; tags?: string },
         @Req() req: any,
-    ) {
+    ): Promise<ResponseDto<any>> {
         if (!file) {
-            throw new Error('No file uploaded');
+            throw new Error('No file uploaded')
         }
 
-        const tags = body.tags ? JSON.parse(body.tags) : [];
+        const tags = body.tags ? JSON.parse(body.tags) : []
 
-        return this.uploadsService.processUploadedFile(
+        const data = this.uploadsService.processUploadedFile(
             file,
             kbId,
             req.user.userId,
             body.title,
             tags,
-        );
+        )
+        return {
+            code: HttpStatus.OK,
+            message: '文件上传成功',
+            result: data,
+        }
     }
 }
