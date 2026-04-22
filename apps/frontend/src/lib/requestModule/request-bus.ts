@@ -1,5 +1,5 @@
 // 为请求绑定业务层，接入内部协议规范和接口文档，向外提供业务接口api
-import service from '@/lib/request'
+import service from '@/lib/requestModule/request-base'
 import {
     CreateKnowledgeBaseInput,
     UpdateKnowledgeBaseInput,
