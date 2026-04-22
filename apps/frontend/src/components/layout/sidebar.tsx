@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, MessageSquare, Upload, Settings, Home } from 'lucide-react';
+import { BookOpen, MessageSquare, MessagesSquare, Upload, Settings, Home } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function Sidebar() {
@@ -12,7 +12,8 @@ export default function Sidebar() {
     const navigation = [
         { name: t('dashboard'), href: '/dashboard', icon: Home },
         { name: t('knowledgeBases'), href: '/dashboard/knowledge-bases', icon: BookOpen },
-        { name: t('chat'), href: '/dashboard/chat', icon: MessageSquare },
+        { name: t('chat'), href: '/dashboard/chat', icon: MessagesSquare },
+        { name: t('aigcChat'), href: '/dashboard/aigc-chat', icon: MessageSquare },
         { name: t('upload'), href: '/dashboard/upload', icon: Upload },
         { name: t('settings'), href: '/dashboard/settings', icon: Settings },
     ];
@@ -24,7 +25,6 @@ export default function Sidebar() {
                     <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                         <div className="flex items-center flex-shrink-0 px-4">
                             <h1 className="text-white text-xl font-bold">Contexta RAG</h1>
-                            {/* <h1 className="text-white text-xl font-bold">袁总的RAG</h1> */}
                         </div>
                         <nav className="mt-5 flex-1 px-2 space-y-1">
                             {navigation.map((item) => {
