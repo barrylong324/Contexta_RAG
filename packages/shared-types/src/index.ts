@@ -2,24 +2,41 @@
 // API Response Types
 // ============================================
 
+export class ResponseDto<T> {
+    code: number
+    message: string
+    result: T
+    constructor(code: number, message: string, data: T) {
+        this.code = code
+        this.message = message
+        this.result = data
+    }
+}
+
+export interface SendMessageDto {
+    kbId: string
+    content: string
+    conversationId?: string
+}
+
 export interface ApiResponse<T = any> {
-    success: boolean;
-    data?: T;
-    error?: ApiError;
-    meta?: PaginationMeta;
+    success: boolean
+    data?: T
+    error?: ApiError
+    meta?: PaginationMeta
 }
 
 export interface ApiError {
-    code: string;
-    message: string;
-    details?: any;
+    code: string
+    message: string
+    details?: any
 }
 
 export interface PaginationMeta {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
+    page: number
+    limit: number
+    total: number
+    totalPages: number
 }
 
 // ============================================
@@ -27,12 +44,12 @@ export interface PaginationMeta {
 // ============================================
 
 export interface UserProfile {
-    id: string;
-    email: string;
-    name?: string;
-    image?: string;
-    role: 'ADMIN' | 'USER' | 'GUEST';
-    createdAt: Date;
+    id: string
+    email: string
+    name?: string
+    image?: string
+    role: 'ADMIN' | 'USER' | 'GUEST'
+    createdAt: Date
 }
 
 // ============================================
@@ -40,31 +57,31 @@ export interface UserProfile {
 // ============================================
 
 export interface KnowledgeBase {
-    id: string;
-    name: string;
-    description?: string;
-    icon?: string;
-    isPublic: boolean;
-    ownerId: string;
-    documentCount?: number;
-    createdAt: Date;
-    updatedAt: Date;
+    id: string
+    name: string
+    description?: string
+    icon?: string
+    isPublic: boolean
+    ownerId: string
+    documentCount?: number
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface CreateKnowledgeBaseInput {
-    name: string;
-    id?: string;
-    description?: string;
-    icon?: string;
-    isPublic?: boolean;
+    name: string
+    id?: string
+    description?: string
+    icon?: string
+    isPublic?: boolean
 }
 
 export interface UpdateKnowledgeBaseInput {
-    id?: string;
-    name?: string;
-    description?: string;
-    icon?: string;
-    isPublic?: boolean;
+    id?: string
+    name?: string
+    description?: string
+    icon?: string
+    isPublic?: boolean
 }
 
 // ============================================
@@ -72,33 +89,33 @@ export interface UpdateKnowledgeBaseInput {
 // ============================================
 
 export interface Document {
-    id: string;
-    title: string;
-    description?: string;
-    fileName: string;
-    fileType: string;
-    fileSize: number;
-    mimeType: string;
-    knowledgeBaseId: string;
-    uploadedById: string;
-    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-    tags: string[];
-    metadata?: any;
-    processingError?: string;
-    createdAt: Date;
-    updatedAt: Date;
+    id: string
+    title: string
+    description?: string
+    fileName: string
+    fileType: string
+    fileSize: number
+    mimeType: string
+    knowledgeBaseId: string
+    uploadedById: string
+    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
+    tags: string[]
+    metadata?: any
+    processingError?: string
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface DocumentWithProgress extends Document {
-    progress?: number; // 0-100
-    estimatedTimeRemaining?: number; // seconds
+    progress?: number // 0-100
+    estimatedTimeRemaining?: number // seconds
 }
 
 export interface UploadDocumentInput {
-    title: string;
-    description?: string;
-    knowledgeBaseId: string;
-    tags?: string[];
+    title: string
+    description?: string
+    knowledgeBaseId: string
+    tags?: string[]
 }
 
 // ============================================
@@ -106,46 +123,46 @@ export interface UploadDocumentInput {
 // ============================================
 
 export interface Conversation {
-    id: string;
-    title?: string;
-    userId: string;
-    knowledgeBaseId?: string;
-    messageCount?: number;
-    createdAt: Date;
-    updatedAt: Date;
+    id: string
+    title?: string
+    userId: string
+    knowledgeBaseId?: string
+    messageCount?: number
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface Message {
-    id: string;
-    conversationId: string;
-    role: 'USER' | 'ASSISTANT' | 'SYSTEM';
-    content: string;
-    sources?: SourceReference[];
-    rating?: 'UPVOTE' | 'DOWNVOTE';
-    feedback?: string;
-    createdAt: Date;
+    id: string
+    conversationId: string
+    role: 'USER' | 'ASSISTANT' | 'SYSTEM'
+    content: string
+    sources?: SourceReference[]
+    rating?: 'UPVOTE' | 'DOWNVOTE'
+    feedback?: string
+    createdAt: Date
 }
 
 export interface SourceReference {
-    chunkId: string;
-    documentId: string;
-    documentTitle: string;
-    score: number;
-    content: string;
-    pageNumber?: number;
+    chunkId: string
+    documentId: string
+    documentTitle: string
+    score: number
+    content: string
+    pageNumber?: number
 }
 
 export interface SendMessageInput {
-    conversationId?: string;
-    knowledgeBaseId?: string;
-    message: string;
+    conversationId?: string
+    knowledgeBaseId?: string
+    message: string
 }
 
 export interface ChatResponse {
-    messageId: string;
-    conversationId: string;
-    answer: string;
-    sources: SourceReference[];
+    messageId: string
+    conversationId: string
+    answer: string
+    sources: SourceReference[]
 }
 
 // ============================================
@@ -153,19 +170,19 @@ export interface ChatResponse {
 // ============================================
 
 export interface SearchQuery {
-    query: string;
-    knowledgeBaseId?: string;
-    limit?: number;
-    threshold?: number;
+    query: string
+    knowledgeBaseId?: string
+    limit?: number
+    threshold?: number
 }
 
 export interface SearchResult {
-    chunkId: string;
-    documentId: string;
-    documentTitle: string;
-    content: string;
-    score: number;
-    metadata?: any;
+    chunkId: string
+    documentId: string
+    documentTitle: string
+    content: string
+    score: number
+    metadata?: any
 }
 
 // ============================================
@@ -173,18 +190,18 @@ export interface SearchResult {
 // ============================================
 
 export interface Collaboration {
-    id: string;
-    userId: string;
-    userEmail: string;
-    userName?: string;
-    knowledgeBaseId: string;
-    role: 'OWNER' | 'EDITOR' | 'VIEWER';
-    createdAt: Date;
+    id: string
+    userId: string
+    userEmail: string
+    userName?: string
+    knowledgeBaseId: string
+    role: 'OWNER' | 'EDITOR' | 'VIEWER'
+    createdAt: Date
 }
 
 export interface InviteMemberInput {
-    email: string;
-    role: 'EDITOR' | 'VIEWER';
+    email: string
+    role: 'EDITOR' | 'VIEWER'
 }
 
 // ============================================
@@ -192,11 +209,11 @@ export interface InviteMemberInput {
 // ============================================
 
 export interface ProcessingTask {
-    taskId: string;
-    documentId: string;
-    status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-    progress: number;
-    error?: string;
-    createdAt: Date;
-    completedAt?: Date;
+    taskId: string
+    documentId: string
+    status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
+    progress: number
+    error?: string
+    createdAt: Date
+    completedAt?: Date
 }
